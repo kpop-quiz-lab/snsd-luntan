@@ -771,9 +771,26 @@ function calcResult() {
       [-0.8,  0.8,  1.0, -0.5,  1.8],
       [ 1.5, -1.5,  0.0,  1.5,  0.0],
     ];
+
+    // 成员索引：0太妍 1Jessica 2顺圭 3Tiffany 4孝渊 5侑莉 6秀英 7允儿 8徐贤
+    // 第三题（index=2）硬过滤
+    // A(0)→太妍0、允儿7、徐贤8、Tiffany3、顺圭2
+    // B(1)→顺圭2、孝渊4、侑莉5、允儿7、徐贤8（排除太妍0、Jessica1、Tiffany3、秀英6）
+    // C(2)→太妍0、允儿7、Jessica1、Tiffany3（排除顺圭2、孝渊4、侑莉5、秀英6、徐贤8）
+    // D(3)→顺圭2、孝渊4、侑莉5、秀英6、徐贤8、Tiffany3（排除太妍0、允儿7、Jessica1）
+    const Q3_FILTER = {
+      0: new Set([0, 2, 3, 7, 8]),
+      1: new Set([2, 4, 5, 7, 8]),
+      2: new Set([0, 1, 3, 7]),
+      3: new Set([2, 3, 4, 5, 6, 8]),
+    };
+    const q3ans = ans[2];
+    const allowed = (q3ans !== null && Q3_FILTER[q3ans]) ? Q3_FILTER[q3ans] : null;
+
     const userZ = totals.map((t,d) => (t - DIM_MEANS[d]) / DIM_STDS[d]);
     let best = 0, bestD = Infinity;
     MEMBER_Z.forEach((mz,i) => {
+      if (allowed && !allowed.has(i)) return;
       const d = mz.reduce((s,z,di) => s + (userZ[di]-z)**2, 0);
       if (d < bestD) { bestD=d; best=i; }
     });
